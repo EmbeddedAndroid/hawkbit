@@ -6,10 +6,11 @@ __version__ = 1.0
 
 user = 'admin'
 password  = 'admin'
-ds_url = 'http://hawkbit:8080/rest/v1/distributionsets'
-sm_url = 'http://hawkbit:8080/rest/v1/softwaremodules'
+DS_URL_DEFAULT = 'http://hawkbit:8080/rest/v1/distributionsets'
+SM_URL_DEFAULT = 'http://hawkbit:8080/rest/v1/softwaremodules'
 
-def publish(provider, name, type, version, description, artifact):
+def publish(provider, name, type, version, description, artifact,
+            ds_url, sm_url):
     # Publish Software Module
     headers = { 'Content-Type': 'application/json',
                 'Accept': 'application/json' }
@@ -73,8 +74,14 @@ def main():
     parser.add_argument('-sv', '--swversion', help='Version', required=True)
     parser.add_argument('-d', '--description', help='Version', required=True)
     parser.add_argument('-f', '--file', help='Version', required=True)
+    parser.add_argument('-ds', '--distribution-sets',
+                        help='Distribution Sets URL', default=DS_URL_DEFAULT)
+    parser.add_argument('-sm', '--software-modules',
+                        help='Software Modules URL', default=SM_URL_DEFAULT)
     args = parser.parse_args()
-    publish(args.provider, args.name, args.type, args.swversion, args.description, args.file)
+    publish(args.provider, args.name, args.type, args.swversion,
+            args.description, args.file, args.distribution_sets,
+            args.software_modules)
 
 if __name__ == '__main__':
     main()
