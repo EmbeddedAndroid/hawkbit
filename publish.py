@@ -7,6 +7,7 @@ __version__ = 1.0
 user = 'admin'
 password  = 'admin'
 
+
 def publish(provider, name, type, version, description, artifact,
             hostname, ds_url=None, sm_url=None):
     # Publish Software Module
@@ -26,18 +27,18 @@ def publish(provider, name, type, version, description, artifact,
     if response.status_code != 500:
         data = json.loads(response.content)
         print data
-        for item in  json.loads(response.content):
-            if 'id' in item:
-                id = item['id']
-            if '_links' in item:
-                if 'artifacts' in item['_links']:
-                    artifacts_url = item['_links']['artifacts']['href']
-                if 'self' in item['_links']:
-                    self_url = item['_links']['self']['href']
-                if 'type' in item['_links']:
-                    type_url = item['_links']['type']['href']
-                if 'metadata' in item['_links']:
-                    metadata_url = item['_links']['metadata']['href']
+        for key in data:
+            if 'id' in key:
+                id = key['id']
+            if '_links' in key:
+                if 'artifacts' in key['_links']:
+                    artifacts_url = key['_links']['artifacts']['href']
+                if 'self' in key['_links']:
+                    self_url = key['_links']['self']['href']
+                if 'type' in key['_links']:
+                    type_url = key['_links']['type']['href']
+                if 'metadata' in key['_links']:
+                    metadata_url = key['_links']['metadata']['href']
         print artifacts_url
         print self_url
         print type_url
