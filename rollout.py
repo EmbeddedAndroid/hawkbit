@@ -1,6 +1,7 @@
 import argparse
 import requests
 import json
+import time
 
 __version__ = 1.0
 
@@ -8,7 +9,7 @@ user = 'admin'
 password  = 'admin'
 
 
-def rollout(name, targetfilter, groups, id, hostname, start=False):
+def rollout(name, targetfilter, groups, id, hostname, start=False, monitor=False):
     # Create the Rollout
     headers = { 'Content-Type': 'application/hal+json;charset=UTF-8',
                 'Accept': 'application/hal+json' }
@@ -54,9 +55,28 @@ def rollout(name, targetfilter, groups, id, hostname, start=False):
                     if 'status' == key:
                         if 'ready' == data[key]:
                             run = False
+            if run:
+                time.sleep(5)
         response = requests.post(start_url, auth=(user, password), headers=headers)
         if response.status_code != 500:
             print "Rollout Started"
+
+    # Monitor the rollout
+    if monitor:
+        run = True
+        while run:
+            response = requests.get(self_url, auth=(user, password), headers=headers)
+            if response.status_code != 500:
+                data = json.loads(response.content)
+                for key in data:
+                    if 'status' == key:
+                        if 'running' == data[key]:
+                            print "Rollout still running..."
+                        if 'finished' == data[key]:
+                            print "Rollout finished"
+                            run = False
+            if run:
+                time.sleep(5)
 
 def main():
     description = 'Simple Hawkbit API Wrapper for creating rollouts'
@@ -66,10 +86,11 @@ def main():
     parser.add_argument('-g', '--groups', help='Number of Rollout Groups', type=int, required=True)
     parser.add_argument('-i', '--id', help='Distribution Set ID', type=int, required=True)
     parser.add_argument('-s', '--start', help='Starts the rollout after creating it', action="store_true")
+    parser.add_argument('-m', '--monitor', help='Monitors the rollout after starting it', action="store_true")
     parser.add_argument('-host', '--hostname', help='Hawkbit Server Hostname or IP', default='hawkbit')
     args = parser.parse_args()
     rollout(args.name, args.targetfilter, args.groups,
-            args.id, args.hostname, args.start)
+            args.id, args.hostname, args.start, args.monitor)
 
 if __name__ == '__main__':
     main()
