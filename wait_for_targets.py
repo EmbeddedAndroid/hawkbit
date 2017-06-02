@@ -15,16 +15,19 @@ def poll(targets, hostname):
     targets_url = 'http://%s:8080/rest/v1/targets' % hostname
     run = True
     while run:
-        response = requests.get(targets_url, auth=(user, password), headers=headers)
-        if response.status_code != 500:
-            data = json.loads(response.content)
-            print data
-            for key in data:
-                if 'total' == key:
-                    if targets == data[key]:
-                        run = False
-                        print "Matched number of targets"
-        if run:
+        try:
+            response = requests.get(targets_url, auth=(user, password), headers=headers)
+            if response.status_code != 500:
+                data = json.loads(response.content)
+                print data
+                for key in data:
+                    if 'total' == key:
+                        if targets == data[key]:
+                            run = False
+                            print "Matched number of targets"
+            if run:
+                time.sleep(5)
+        except:
             time.sleep(5)
 
 def main():
