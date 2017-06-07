@@ -15,10 +15,20 @@ def set(time, hostname):
     config = { 'keyName': 'pollingTime',
                'value': time }
     config_url = 'http://%s:8080/rest/v1/system/configs/pollingTime' % hostname
-    response = requests.put(config_url, data=json.dumps(config), auth=(user, password), headers=headers)
-    if response.status_code != 500:
-        data = json.loads(response.content)
-        print data
+    run = True
+    while run:
+        try:
+            response = requests.put(config_url, data=json.dumps(config), auth=(user, password), headers=headers)
+            if response.status_code != 500:
+                if response.status_code == 200:
+                    print("HTTP 200 OK")
+                    data = json.loads(response.content)
+                    print data
+                    run = False
+            if run:
+                time.sleep(5)
+        except:
+            time.sleep(5)
 
 def main():
     description = 'Simple Hawkbit API Wrapper for setting the polling time'
