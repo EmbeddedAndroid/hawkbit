@@ -9,11 +9,11 @@ user = 'admin'
 password  = 'admin'
 
 
-def set(time, hostname):
+def set(interval, hostname):
     headers = { 'Content-Type': 'application/hal+json;charset=UTF-8',
                 'Accept': 'application/hal+json' }
     config = { 'keyName': 'pollingTime',
-               'value': time }
+               'value': interval}
     config_url = 'http://%s:8080/rest/v1/system/configs/pollingTime' % hostname
     run = True
     while run:
