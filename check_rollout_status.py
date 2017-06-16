@@ -22,6 +22,7 @@ def rollout(id, hostname, xfail=False):
                 total_targets = data[key]
             if 'totalTargetsPerStatus' == key:
                 target_error_count = data[key]['error']
+                target_success_count = data[key]['finished']
 
         if total_targets == target_error_count:
             if xfail:
@@ -30,13 +31,16 @@ def rollout(id, hostname, xfail=False):
             else:
                 print "Rollout failed with errors."
                 exit(1)
-        else:
+        elif total_targets == target_success_count:
             if xfail:
                 print "Rollout succeeded with no errors, this was unexpected."
                 exit(1)
             else:
                 print "Rollout succeeded with no errors."
                 exit(0)
+        else:
+            print "Rollout failed with a subset of errors."
+            exit(1)
 
 def main():
     description = 'Simple Hawkbit API Wrapper for checking rollout status'
