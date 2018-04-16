@@ -31,18 +31,11 @@ def publish(provider, name, type, version, description, artifact,
             if 'id' in key:
                 id = key['id']
             if '_links' in key:
-                if 'artifacts' in key['_links']:
-                    artifacts_url = key['_links']['artifacts']['href']
                 if 'self' in key['_links']:
                     self_url = key['_links']['self']['href']
-                if 'type' in key['_links']:
-                    type_url = key['_links']['type']['href']
-                if 'metadata' in key['_links']:
-                    metadata_url = key['_links']['metadata']['href']
+                    artifacts_url = self_url + '/artifacts'
         print artifacts_url
         print self_url
-        print type_url
-        print metadata_url
         print id
     # Upload Artifact
     headers = {'Accept': 'application/json' }
@@ -59,9 +52,7 @@ def publish(provider, name, type, version, description, artifact,
                'version': version,
                'modules': [{'id': id}],
                '_links': {'artifacts': artifacts_url,
-                          'self': self_url,
-                          'type': type_url,
-                          'metadata': metadata_url} }
+                          'self': self_url}}
         response = requests.post(ds_url, data=json.dumps([ds]), auth=(user, password), headers=headers)
         if response.status_code != 500:
             print response.content
